@@ -47,7 +47,7 @@ const inviteUsers = async () => {
     .filter(Boolean);
 
   try {
-    // 1️⃣ Fetch all existing users
+    // 1️⃣ Fetch existing users
     const usersRes = await monday.api(`
       query {
         users {
@@ -66,7 +66,6 @@ const inviteUsers = async () => {
     for (const email of emailList) {
       let userId;
 
-      // 2️⃣ Check if user already exists
       const existingUser = users.find(
         u => u.email?.toLowerCase() === email
       );
@@ -74,22 +73,26 @@ const inviteUsers = async () => {
       if (existingUser) {
         userId = existingUser.id;
       } else {
-        // 3️⃣ Invite external user (CREATE USER)
+        // 2️⃣ Invite external user (CORRECT API)
         try {
           const inviteRes = await monday.api(`
             mutation {
               invite_users(
                 emails: ["${email}"],
-                kind: ${role}
+                user_kind: ${role}
               ) {
-                id
+                invited_users {
+                  id
+                  email
+                }
               }
             }
           `);
 
-          userId = inviteRes.data.invite_users[0].id;
-          invited.push(email);
+          userId =
+            inviteRes.data.invite_users.invited_users[0].id;
 
+          invited.push(email);
         } catch (err) {
           console.error("Invite failed:", email, err);
           failed.push(email);
@@ -97,7 +100,7 @@ const inviteUsers = async () => {
         }
       }
 
-      // 4️⃣ Add user to selected boards
+      // 3️⃣ Add user to boards
       for (const boardId of selectedBoards) {
         await monday.api(
           `
@@ -119,10 +122,10 @@ const inviteUsers = async () => {
       added.push(email);
     }
 
-    // 5️⃣ Status Summary
+    // 4️⃣ Status message
     let message = "✅ Completed\n";
-    if (added.length) message += `✔ Added to boards: ${added.join(", ")}\n`;
-    if (invited.length) message += `📩 Invited new users: ${invited.join(", ")}\n`;
+    if (added.length) message += `✔ Added: ${added.join(", ")}\n`;
+    if (invited.length) message += `📩 Invited: ${invited.join(", ")}\n`;
     if (failed.length) message += `❌ Failed: ${failed.join(", ")}`;
 
     setStatus(message);
@@ -134,6 +137,7 @@ const inviteUsers = async () => {
     setStatus("❌ Error processing invites");
   }
 };
+
 
   
   
