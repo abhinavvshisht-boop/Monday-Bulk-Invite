@@ -73,13 +73,13 @@ const inviteUsers = async () => {
       if (existingUser) {
         userId = existingUser.id;
       } else {
-        // 2️⃣ Invite external user (CORRECT API)
+        // 2️⃣ Invite external user (✅ CORRECT FOR YOUR SCHEMA)
         try {
           const inviteRes = await monday.api(`
             mutation {
               invite_users(
                 emails: ["${email}"],
-                user_kind: ${role}
+                user_role: ${role}
               ) {
                 invited_users {
                   id
@@ -137,6 +137,7 @@ const inviteUsers = async () => {
     setStatus("❌ Error processing invites");
   }
 };
+
 
 
   
