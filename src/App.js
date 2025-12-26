@@ -76,18 +76,19 @@ const inviteUsers = async () => {
         // 2️⃣ Invite external user (✅ CORRECT FOR YOUR SCHEMA)
         try {
           const inviteRes = await monday.api(`
-            mutation {
-              invite_users(
-                emails: ["${email}"],
-                user_role: ${role}
-              ) {
-                invited_users {
-                  id
-                  email
-                }
-              }
-            }
-          `);
+  mutation {
+    invite_users(
+      emails: ["${email}"],
+      user_role: ${role.toUpperCase()}
+    ) {
+      invited_users {
+        id
+        email
+      }
+    }
+  }
+`);
+
 
           userId =
             inviteRes.data.invite_users.invited_users[0].id;
