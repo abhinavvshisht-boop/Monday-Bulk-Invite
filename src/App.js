@@ -35,77 +35,106 @@ export default function App() {
     );
   };
 
-  const inviteUsers = async () => {
-    if (!emails || selectedBoards.length === 0) {
-      setStatus("❌ Please add emails and select boards");
-      return;
-    }
-  
-    const emailList = emails
-      .split(/[\n,]/)
-      .map(e => e.trim().toLowerCase())
-      .filter(Boolean);
-  
-    try {
-      // 1️⃣ Fetch all users from account
-      const usersRes = await monday.api(`
-        query {
-          users {
-            id
-            email
-          }
+const inviteUsers = async () => {
+  if (!emails || selectedBoards.length === 0) {
+    setStatus("❌ Please add emails and select boards");
+    return;
+  }
+
+  const emailList = emails
+    .split(/[\n,]/)
+    .map(e => e.trim().toLowerCase())
+    .filter(Boolean);
+
+  try {
+    // 1️⃣ Fetch all existing users
+    const usersRes = await monday.api(`
+      query {
+        users {
+          id
+          email
         }
-      `);
-  
-      const users = usersRes.data.users;
-  
-      let added = [];
-      let skipped = [];
-  
-      // 2️⃣ Match emails & add to boards
-      for (const email of emailList) {
-        const user = users.find(u => u.email?.toLowerCase() === email);
-  
-        if (!user) {
-          skipped.push(email);
-          continue;
-        }
-  
-        for (const boardId of selectedBoards) {
-          await monday.api(
-            `
-            mutation ($boardId: ID!, $userIds: [ID!]!) {
-              add_users_to_board(board_id: $boardId, user_ids: $userIds) {
+      }
+    `);
+
+    const users = usersRes.data.users;
+
+    let added = [];
+    let invited = [];
+    let failed = [];
+
+    for (const email of emailList) {
+      let userId;
+
+      // 2️⃣ Check if user already exists
+      const existingUser = users.find(
+        u => u.email?.toLowerCase() === email
+      );
+
+      if (existingUser) {
+        userId = existingUser.id;
+      } else {
+        // 3️⃣ Invite external user (CREATE USER)
+        try {
+          const inviteRes = await monday.api(`
+            mutation {
+              invite_users(
+                emails: ["${email}"],
+                kind: ${role}
+              ) {
                 id
               }
             }
-            `,
-            {
-              variables: {
-                boardId,
-                userIds: [user.id],
-              },
-            }
-          );
+          `);
+
+          userId = inviteRes.data.invite_users[0].id;
+          invited.push(email);
+
+        } catch (err) {
+          console.error("Invite failed:", email, err);
+          failed.push(email);
+          continue;
         }
-  
-        added.push(email);
       }
-  
-      // 3️⃣ Show result summary
-      let message = "✅ Completed\n";
-      if (added.length) message += `✔ Added: ${added.join(", ")}\n`;
-      if (skipped.length) message += `⚠ Not found: ${skipped.join(", ")}`;
-  
-      setStatus(message);
-      setEmails("");
-      setSelectedBoards([]);
-  
-    } catch (error) {
-      console.error(error);
-      setStatus("❌ Error adding users to boards");
+
+      // 4️⃣ Add user to selected boards
+      for (const boardId of selectedBoards) {
+        await monday.api(
+          `
+          mutation ($boardId: ID!, $userIds: [ID!]!) {
+            add_users_to_board(board_id: $boardId, user_ids: $userIds) {
+              id
+            }
+          }
+          `,
+          {
+            variables: {
+              boardId,
+              userIds: [userId],
+            },
+          }
+        );
+      }
+
+      added.push(email);
     }
-  };
+
+    // 5️⃣ Status Summary
+    let message = "✅ Completed\n";
+    if (added.length) message += `✔ Added to boards: ${added.join(", ")}\n`;
+    if (invited.length) message += `📩 Invited new users: ${invited.join(", ")}\n`;
+    if (failed.length) message += `❌ Failed: ${failed.join(", ")}`;
+
+    setStatus(message);
+    setEmails("");
+    setSelectedBoards([]);
+
+  } catch (error) {
+    console.error(error);
+    setStatus("❌ Error processing invites");
+  }
+};
+
   
   
 
