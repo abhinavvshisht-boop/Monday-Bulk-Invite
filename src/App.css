@@ -36,3 +36,173 @@
     transform: rotate(360deg);
   }
 }
+
+/* ---------- GLOBAL ---------- */
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f6f7fb;
+}
+
+.container {
+  max-width: 820px;
+  margin: 20px auto;
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #323338;
+  margin-bottom: 16px;
+}
+
+/* ---------- LABELS ---------- */
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #676879;
+  margin: 14px 0 6px;
+}
+
+/* ---------- INPUTS ---------- */
+textarea,
+input[type="text"],
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #d0d4e4;
+  font-size: 14px;
+  background: #fff;
+}
+
+textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+textarea:focus,
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #579bfc;
+  box-shadow: 0 0 0 2px rgba(87, 155, 252, 0.15);
+}
+
+/* ---------- BOARDS LIST ---------- */
+.boards {
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid #e6e9ef;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.board-row {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.board-row:hover {
+  background: #f5f6fa;
+}
+
+.board-row span {
+  flex: 1;
+  font-size: 14px;
+  color: #323338;
+}
+
+.board-row small {
+  font-size: 11px;
+  color: #a0a0a0;
+}
+
+/* ---------- CHECKBOX ---------- */
+input[type="checkbox"] {
+  margin-right: 10px;
+  accent-color: #0073ea;
+  cursor: pointer;
+}
+
+/* ---------- USER DROPDOWN ---------- */
+.user-dropdown {
+  position: relative;
+}
+
+.dropdown-list {
+  position: absolute;
+  top: 42px;
+  width: 100%;
+  max-height: 240px;
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1px solid #d0d4e4;
+  border-radius: 6px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  z-index: 20;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: #f5f6fa;
+}
+
+.dropdown-item span {
+  font-size: 14px;
+  color: #323338;
+}
+
+.dropdown-item small {
+  margin-left: auto;
+  font-size: 11px;
+  color: #8f90a6;
+}
+
+/* ---------- BUTTON ---------- */
+button {
+  margin-top: 20px;
+  background: #0073ea;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 18px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+button:hover {
+  background: #0060c8;
+}
+
+button:active {
+  background: #004fa3;
+}
+
+/* ---------- STATUS ---------- */
+.status {
+  margin-top: 16px;
+  background: #f5f6fa;
+  border: 1px solid #e6e9ef;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: pre-wrap;
+  color: #323338;
+}
+
