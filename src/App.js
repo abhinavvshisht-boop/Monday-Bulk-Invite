@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import mondaySdk from "monday-sdk-js";
+import "./App.css";
 
 const monday = mondaySdk();
 
